@@ -1,0 +1,31 @@
+/**
+ * Where in the course of human events ...
+ * Foo is become bar.
+[
+ */
+[
+  1, // Comment!
+  2, // Moose
+  true,
+  false,
+  """""",
+  // inline
+  """
+A
+B
+C
+""",
+  /*** pre comment ***/ {
+    "foo": "bar",
+    """FOO
+OOF""": """BAR
+RAB""",
+    "new": "//",
+    "new1": "/* */",
+    "new2": """"quote\"""",
+    "new3": 1_000_000
+  }
+]
+
+// Footer
+/*ASDFSDFSDFSDF*/
