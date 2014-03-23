@@ -167,7 +167,11 @@ var ZSON = {
     } else {
       return JSON.parse(jsonStr);
     }
-  }
+  },
+  /**
+   * For congruence with 'JSON' we include a 'stringify' method.
+   */
+  stringify: JSON.stringify
 };
 
 if (typeof module !== 'undefined') {

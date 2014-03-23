@@ -91,3 +91,12 @@ for the parser:
 var rawJson = ZSON.parse('{/*excise*/}', false);
 // Returns '{}'
 ```
+
+### Stringification
+
+The module also includes `ZSON.stringify` which is just an alias to
+`JSON.stringify`, to allow you to do all your ZSON parsing with one module.
+
+### Testing
+
+Run unit tests with `nodeunit tests/`.
