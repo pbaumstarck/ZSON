@@ -53,6 +53,26 @@ Whether 'tis Nobler in the mind to suffer" ...""
 }
 ```
 
+### Trailing Commas
+
+ZSON also goes Python style by allowing trailing commas after the last elements in lists and arrays:
+
+```javascript
+[
+  1,
+  2,
+  3,
+]
+```
+
+```javascript
+{
+  "a": 1,
+  "b": 2,
+  "c": 3,
+}
+```
+
 ### Thousands Separators for Numbers
 
 This was really a spur-of-the-moment thing, but you can put underscores in
