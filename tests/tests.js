@@ -204,3 +204,103 @@ exports.testCustomParser = function(test) {
   test.equal('{}', ZSON.parse('{/*excise*/}', false));
   test.done();
 };
+
+exports.testTrailingCommasInArrays1 = function(test) {
+  test.deepEqual([1], ZSON.parse('[1,]'));
+  test.deepEqual([1,2,3], ZSON.parse('[1,2,3,]'));
+  test.deepEqual([true], ZSON.parse('[true,]'));
+  test.deepEqual([false], ZSON.parse('[false,]'));
+  test.deepEqual(["1"], ZSON.parse('["1",]'));
+  test.deepEqual(["q"], ZSON.parse('[/*a*/"q",]'));
+  try {
+    ZSON.parse('[,]');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('[,,]');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('[,1]');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('[,1,]');
+    test.ok(false);
+  } catch (e) {}
+  test.done();
+};
+
+exports.testTrailingCommasInArrays2 = function(test) {
+  test.deepEqual([1], ZSON.parse([
+    '[',
+    '  // asdf.',
+    '  1,',
+    '  // moose.',
+    ']'
+  ].join('\n')));
+  try {
+    ZSON.parse([
+      '[',
+      '  // asdf.',
+      '  /** foooo',
+      '   * foooo',
+      '   */,',
+      ']'
+    ].join('\n'));
+    test.ok(false);
+  } catch (e) {}
+  test.done();
+};
+
+exports.testTrailingCommasInObjects1 = function(test) {
+  test.deepEqual({'a': 1}, ZSON.parse('{"a":1,}'));
+  test.deepEqual({'a': 1, 'b': 2}, ZSON.parse('{"a":1,"b":2,}'));
+  test.deepEqual({'a': true}, ZSON.parse('{"a": true,}'));
+  test.deepEqual({'a': false}, ZSON.parse('{"a": false,}'));
+  test.deepEqual({'a': false}, ZSON.parse('{/*sdf*/"a": false/*asdf*/,}'));
+  try {
+    ZSON.parse('{,}');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('{,,}');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('{,"a":1}');
+    test.ok(false);
+  } catch (e) {}
+  try {
+    ZSON.parse('{,"a":1,}');
+    test.ok(false);
+  } catch (e) {}
+  test.done();
+};
+
+exports.testTrailingCommasInObjects2 = function(test) {
+  test.deepEqual({'asdf\nmoose': 'goomba\nroomba'}, ZSON.parse([
+    '{',
+    '  """asdf',
+    'moose""": """goomba',
+    'roomba"""/*asfd*/,// asdf.',
+    ' //asdfasdf',
+    '  /** asdf',
+    'qwerty****/',
+    '}'
+  ].join('\n')));
+  try {
+    ZSON.parse([
+      '{',
+      '  """asdf',
+      'moose""": """goomba',
+      'roomba"""/*asfd*/,// asdf.',
+      ' //asdfasdf',
+      '  /** asdf',
+      'qwerty****/,',
+      '}'
+    ].join('\n'));
+    test.ok(false);
+  } catch (e) {}
+  test.done();
+};

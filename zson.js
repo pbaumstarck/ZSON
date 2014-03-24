@@ -40,6 +40,15 @@ var ZSON = {
     var ix = 0;
     var escaped = false;
 
+    // Count of the number of arrays or objects we are inside of.
+    var structureCount = 0;
+    // The position of the last comma detected.
+    var lastCommaPos = -1;
+    // Whether we have parsed any content since opening the last structure.
+    var anyContentSinceLastStructure = false;
+    // Whether we have parsed any content since reading the last comma.
+    var contentSinceLastComma = false;
+
     // Convert it to an array, and we either delete or expand characters to
     // make it conform to plain JSON.
     str = str.split('');
@@ -50,6 +59,8 @@ var ZSON = {
       var look2 = ix + 2 < length ? str[ix + 2] : undefined;
       if (mode == Mode.CONTENT) {
         if (chr == '"') {
+          anyContentSinceLastStructure = true;
+          contentSinceLastComma = true;
           if (look1 == '"' && look2 == '"') {
             // It's the start of a multi-line string, so terminate the extra
             // double quotes.
@@ -74,8 +85,38 @@ var ZSON = {
           ix += 2;
           mode = Mode.MULTI_LINE_COMMENT;
         } else if (chr == '-' || chr >= '0' && chr <= '9') {
+          anyContentSinceLastStructure = true;
+          contentSinceLastComma = true;
           mode = Mode.NUMBER;
+        } else if (chr == '[' || chr == '{') {
+          // We are going inside an array or object.
+          anyContentSinceLastStructure = false;
+          contentSinceLastComma = true;
+          ++structureCount;
+          ++ix;
+        } else if (chr == ']' || chr == '}') {
+          if (structureCount > 0 && anyContentSinceLastStructure &&
+              !contentSinceLastComma && lastCommaPos != -1) {
+            // Kill that trailing comma.
+            str[lastCommaPos] = '';
+          }
+          anyContentSinceLastStructure = true;
+          contentSinceLastComma = true;
+          lastCommaPos = -1;
+          // We are leaving an array or object.
+          --structureCount;
+          ++ix;
+        } else if (chr == ',') {
+          // We have read a comma.
+          contentSinceLastComma = false;
+          lastCommaPos = ix;
+          ++ix;
+        } else if (chr == ' ' || chr == '\t' || chr == '\n') {
+          // We have read whitespace.
+          ++ix;
         } else {
+          anyContentSinceLastStructure = true;
+          contentSinceLastComma = true;
           ++ix;
         }
       } else if (mode == Mode.SINGLE_LINE_COMMENT) {
