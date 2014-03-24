@@ -7,7 +7,9 @@ templates?" Enter Bedizened JSON (ZSON).
 
 ZSON adds these helpful, human-friendly features on top of regular JSON.
 The ZSON parser strips out this special syntax and converts the input to
-plain JSON, which is then interpreted by your custom JSON parser of choice.
+plain JSON, which is then interpreted by your JSON parser of choice.
+
+Demo: http://www.itsagoldenage.com/zson
 
 ### Single-Line Comments
 
